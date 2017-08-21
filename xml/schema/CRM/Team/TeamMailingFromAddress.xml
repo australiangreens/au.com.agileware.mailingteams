@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<table>
+  <base>CRM/Team</base>
+  <class>TeamMailingFromAddress</class>
+  <name>civicrm_team_mailing_email</name>
+  <comment>Relationship between a Team and a "From Email Address" it can use.</comment>
+  <add>4.7</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique TeamMailingFromAddress ID</comment>
+    <add>4.7</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>team_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to civicrm_team</comment>
+    <add>4.7</add>
+    <pseudoconstant>
+      <table>civicrm_team</table>
+      <keyColumn>id</keyColumn>
+      <labelColumn>team_name</labelColumn>
+    </pseudoconstant>
+  </field>
+  <foreignKey>
+    <name>team_id</name>
+    <table>civicrm_team</table>
+    <key>id</key>
+    <add>4.7</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>from_email_address_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>From Email Address option value</comment>
+    <add>4.7</add>
+    <pseudoconstant>
+      <optionGroupName>from_email_address</optionGroupName>
+      <keyColumn>id</keyColumn>
+      <labelColumn>value</labelColumn>
+    </pseudoconstant>
+  </field>
+
+  <index>
+    <name>UI_team_mailing_from_address_option_id</name>
+    <fieldName>team_id</fieldName>
+    <fieldName>from_email_address_id</fieldName>
+    <unique>true</unique>
+    <add>4.7</add>
+  </index>
+
+</table>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<table>
+  <base>CRM/Team</base>
+  <class>TeamMailingGroup</class>
+  <name>civicrm_team_mailing_group</name>
+  <comment>FIXME</comment>
+  <add>4.7</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique TeamMailingGroup ID</comment>
+    <add>4.7</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>team_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to civicrm_team</comment>
+    <add>4.7</add>
+    <pseudoconstant>
+      <table>civicrm_team</table>
+      <keyColumn>id</keyColumn>
+      <labelColumn>team_name</labelColumn>
+    </pseudoconstant>
+  </field>
+  <foreignKey>
+    <name>team_id</name>
+    <table>civicrm_team</table>
+    <key>id</key>
+    <add>4.7</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>group_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact</comment>
+    <required>true</required>
+    <add>4.7</add>
+  </field>
+  <foreignKey>
+    <name>group_id</name>
+    <table>civicrm_group</table>
+    <key>id</key>
+    <add>4.7</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>role</name>
+    <type>varchar</type>
+    <length>64</length>
+    <comment>Roles the team performs with the Mailing.</comment>
+    <add>4.7</add>
+  </field>
+
+  <index>
+    <name>UI_team_group_role</name>
+    <fieldName>team_id</fieldName>
+    <fieldName>group_id</fieldName>
+    <fieldName>role</fieldName>
+    <unique>true</unique>
+    <add>4.7</add>
+  </index>
+
+</table>
