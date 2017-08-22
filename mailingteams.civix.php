@@ -114,14 +114,14 @@ function _mailingteams_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL)
 }
 
 /**
- * @return CRM_Mailingteams_Upgrader
+ * @return CRM_MailingTeam_Upgrader
  */
 function _mailingteams_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Mailingteams/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/MailingTeam/Upgrader.php')) {
     return NULL;
   }
   else {
-    return CRM_Mailingteams_Upgrader_Base::instance();
+    return CRM_MailingTeam_Upgrader_Base::instance();
   }
 }
 
