@@ -139,18 +139,67 @@ function mailingteams_civicrm_entityTypes(&$entityTypes) {
   }
 }
 
+function mailingteams_civicrm_preProcess($formName, &$form) {
+  if ($formName == 'CRM_Team_Form_Settings') {
+    $form->add_elementGroup('mailingteams', ts('Mailing'));
+
+    $form->add('checkbox', 'mailingteams.restricted', ts('Restricted'));
+    $form->add_elementName(
+      'mailingteams.restricted', 'mailingteams',
+      ts('A restricted Team cannot load or copy Mailings created by another Team.')
+    );
+
+    $form->addEntityRef('mailingteams.from_addresses', ts('From Email Addresses'),
+      array (
+        'entity' => 'option_value',
+        'api' => array ('params' => array ('option_group_id' => 'from_email_address')),
+        'select' => array ('minimumInputLength' => 0),
+        'multiple' => TRUE,
+      ));
+    $form->add_elementName(
+      'mailingteams.from_addresses', 'mailingteams',
+      ts('From Email Addresses that this Team is allowed to create Mailings with. The list of available email addresses is administered from <a href="%1">%2</a>',
+        array(
+          1 => CRM_Utils_System::url('civicrm/admin/options/from_email_address', 'reset=1'),
+          2 => ts('the CiviMail "From Email Addresses" page.')
+        )));
+
+    // Generate the magic incantation to find only mailing type groups.
+    // @TODO stab my eyeballs out with a spoon.
+    $mailing_type = civicrm_api3('OptionValue', 'getvalue',
+      array('option_group_id' => 'group_type', 'name' => 'Mailing List', 'return' => 'value')
+    );
+    $mailing_type = "%\x01{$mailing_type}\x01%";
+
+    $form->addEntityRef('mailingteams.groups_draft', ts('Draft Groups'),
+      array (
+        'entity' => 'group',
+        'api' => array('params' => array( 'group_type' => array('LIKE' => $mailing_type))),
+        'multiple' => TRUE,
+      ));
+    $form->add_elementName('mailingteams.groups_draft', 'mailingteams', ts('Groups that this Team can draft Mailings for.'));
+
+    $form->addEntityRef('mailingteams.groups_publish', ts('Publish Groups'),
+      array (
+        'entity' => 'group',
+        'api' => array('params' => array( 'group_type' => array('LIKE' => $mailing_type))),
+        'multiple' => TRUE,
+      ));
+    $form->add_elementName('mailingteams.groups_publish', 'mailingteams', ts('Groups that this Team can approve and Schedule for Mailings.'));
+  }
+}
+
+function mailingteams_civicrm_postProcess($formName, &$form) {
+  if ($formName == 'CRM_Team_Form_Settings') {
+    $values = $form->exportValues();
+
+    $team = civicrm_api3('Team', 'getsingle', array('id' => $values['team_id']));
+  }
+}
+
 /**
  * Functions below this ship commented out. Uncomment as required.
  *
-
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_preProcess
- *
-function mailingteams_civicrm_preProcess($formName, &$form) {
-
-} // */
 
 /**
  * Implements hook_civicrm_navigationMenu().
