@@ -26,11 +26,6 @@
     <required>true</required>
     <comment>FK to civicrm_team</comment>
     <add>4.7</add>
-    <pseudoconstant>
-      <table>civicrm_team</table>
-      <keyColumn>id</keyColumn>
-      <labelColumn>team_name</labelColumn>
-    </pseudoconstant>
   </field>
   <foreignKey>
     <name>team_id</name>

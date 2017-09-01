@@ -118,11 +118,6 @@ class CRM_Team_DAO_TeamMailing extends CRM_Core_DAO {
           'bao' => 'CRM_Team_DAO_TeamMailing',
           'localizable' => 0,
           'FKClassName' => 'CRM_Team_DAO_Team',
-          'pseudoconstant' => array(
-            'table' => 'civicrm_team',
-            'keyColumn' => 'id',
-            'labelColumn' => 'team_name',
-          )
         ) ,
         'mailing_id' => array(
           'name' => 'mailing_id',
@@ -134,11 +129,6 @@ class CRM_Team_DAO_TeamMailing extends CRM_Core_DAO {
           'bao' => 'CRM_Team_DAO_TeamMailing',
           'localizable' => 0,
           'FKClassName' => 'CRM_Mailing_DAO_Mailing',
-          'pseudoconstant' => array(
-            'table' => 'civicrm_mailing',
-            'keyColumn' => 'id',
-            'labelColumn' => 'name',
-          )
         ) ,
       );
       CRM_Core_DAO_AllCoreTables::invoke(__CLASS__, 'fields_callback', Civi::$statics[__CLASS__]['fields']);

@@ -124,11 +124,6 @@ class CRM_Team_DAO_TeamMailingGroup extends CRM_Core_DAO {
           'bao' => 'CRM_Team_DAO_TeamMailingGroup',
           'localizable' => 0,
           'FKClassName' => 'CRM_Team_DAO_Team',
-          'pseudoconstant' => array(
-            'table' => 'civicrm_team',
-            'keyColumn' => 'id',
-            'labelColumn' => 'team_name',
-          )
         ) ,
         'group_id' => array(
           'name' => 'group_id',

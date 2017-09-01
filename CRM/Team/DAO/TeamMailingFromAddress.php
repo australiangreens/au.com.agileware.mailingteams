@@ -117,11 +117,6 @@ class CRM_Team_DAO_TeamMailingFromAddress extends CRM_Core_DAO {
           'bao' => 'CRM_Team_DAO_TeamMailingFromAddress',
           'localizable' => 0,
           'FKClassName' => 'CRM_Team_DAO_Team',
-          'pseudoconstant' => array(
-            'table' => 'civicrm_team',
-            'keyColumn' => 'id',
-            'labelColumn' => 'team_name',
-          )
         ) ,
         'from_email_address_id' => array(
           'name' => 'from_email_address_id',
@@ -134,8 +129,6 @@ class CRM_Team_DAO_TeamMailingFromAddress extends CRM_Core_DAO {
           'localizable' => 0,
           'pseudoconstant' => array(
             'optionGroupName' => 'from_email_address',
-            'keyColumn' => 'id',
-            'labelColumn' => 'value',
             'optionEditPath' => 'civicrm/admin/options/from_email_address',
           )
         ) ,
