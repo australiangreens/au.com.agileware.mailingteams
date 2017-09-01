@@ -220,6 +220,28 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
 
     $form->setDefaults($defaults);
   }
+  elseif ($formName == 'CRM_Team_Form_Teams') {
+    /* Add columns to Team Listing. */
+    $selector =& $form->selector();
+
+    $optgroupID = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'from_email_address', 'return' => 'id'));
+    $selector->join('tm', 'LEFT JOIN (
+SELECT tme1.team_id, GROUP_CONCAT(ov.label ORDER BY ov.label ASC SEPARATOR ", ") `emails`
+       FROM civicrm_option_value ov
+       INNER JOIN civicrm_team_mailing_email tme1 ON (ov.value = tme1.from_email_address_id AND ov.option_group_id = @optgroupID)
+       GROUP BY tme1.team_id
+) tme ON tme.team_id = t.id',
+      array('optgroupID' => $optgroupID));
+    $selector->addColumn('from_email_addresses', ts('From Email Addresses'), 'tme.emails `from_email_addresses`');
+
+    $selector->join('tmg', 'LEFT JOIN (
+SELECT tmg1.team_id, GROUP_CONCAT(DISTINCT g.title ORDER BY g.title ASC SEPARATOR ", ") `groups`
+       FROM civicrm_group g
+       INNER JOIN civicrm_team_mailing_group tmg1 ON(g.id = tmg1.group_id)
+       GROUP BY tmg1.team_id
+) tmg ON tmg.team_id = t.id');
+    $selector->addColumn('groups', ts('Groups'), 'tmg.groups');
+  }
 }
 
 function mailingteams_civicrm_postProcess($formName, &$form) {
