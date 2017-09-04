@@ -244,6 +244,34 @@ SELECT tmg1.team_id, GROUP_CONCAT(DISTINCT g.title ORDER BY g.title ASC SEPARATO
   }
 }
 
+function mailingteams_civicrm_buildForm($formName, &$form) {
+  if($formName == 'CRM_Team_Form_Teams') {
+    $form->addEntityRef('mailingteams_from_address', ts('From Email Address'),
+      array (
+        'entity' => 'option_value',
+        'api' => array ('params' => array ('option_group_id' => 'from_email_address')),
+        'select' => array ('minimumInputLength' => 0),
+      ));
+
+    $mailing_type = civicrm_api3('OptionValue', 'getvalue',
+      array('option_group_id' => 'group_type', 'name' => 'Mailing List', 'return' => 'value')
+    );
+    $mailing_type = "%\x01{$mailing_type}\x01%";
+
+    $form->addEntityRef('mailingteams_groups', ts('Groups'),
+      array (
+        'entity' => 'group',
+        'api' => array('params' => array( 'group_type' => array('LIKE' => $mailing_type))),
+        'select' => array ('minimumInputLength' => 0),
+        'multiple' => TRUE,
+      ));
+    $form->addSearchElement(array(
+        'title' => ts('Mailing'),
+        'children' => array('mailingteams_from_address', 'mailingteams_groups')
+      ));
+  }
+}
+
 function mailingteams_civicrm_postProcess($formName, &$form) {
   if ($formName == 'CRM_Team_Form_Settings') {
     $values = $form->exportValues();
@@ -280,6 +308,23 @@ function mailingteams_civicrm_postProcess($formName, &$form) {
                       : array());
 
     _mailingteams_update_groups($form->team_id, $draft_groups, $publish_groups);
+  }
+  elseif ($formName == 'CRM_Team_Form_Teams') {
+    $selector =& $form->selector();
+
+    if ($group_ids = CRM_Utils_Request::retrieve('mailingteams_groups', 'String')) {
+      $selector->where(
+        'EXISTS (SELECT 1 FROM civicrm_team_mailing_group WHERE group_id IN (@group_id) AND team_id = t.id)',
+        array('group_id' => $group_ids)
+      );
+    }
+
+    if ($email_id = CRM_Utils_Request::retrieve('mailingteams_from_address', 'String')) {
+      $selector->where(
+        'EXISTS (SELECT 1 FROM civicrm_team_mailing_email WHERE from_email_address_id IN (@email_id) AND team_id = t.id)',
+        array('email_id' => $email_id)
+      );
+    }
   }
 }
 
