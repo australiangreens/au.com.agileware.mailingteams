@@ -225,7 +225,7 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
     $selector =& $form->selector();
 
     $optgroupID = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'from_email_address', 'return' => 'id'));
-    $selector->join('tm', 'LEFT JOIN (
+    $selector->join('tme', 'LEFT JOIN (
 SELECT tme1.team_id, GROUP_CONCAT(ov.label ORDER BY ov.label ASC SEPARATOR ", ") `emails`
        FROM civicrm_option_value ov
        INNER JOIN civicrm_team_mailing_email tme1 ON (ov.value = tme1.from_email_address_id AND ov.option_group_id = @optgroupID)
