@@ -190,7 +190,7 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
         'api' => array('params' => array( 'group_type' => array('LIKE' => $mailing_type))),
         'multiple' => TRUE,
       ));
-    $form->add_elementName('mailingteams_groups_publish', 'mailingteams', ts('Groups that this Team can Approve and Schedule Mailings for.'));
+    $form->add_elementName('mailingteams_groups_publish', 'mailingteams', ts('Groups that this Team can Approve and Schedule Mailings for; the Team will also be able to Draft Mailings for these Groups.'));
 
     // Get and set the MailingTeam defaults.
     $team = civicrm_api3('Team','getsingle', array('id' => $form->team_id));
