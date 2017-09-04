@@ -193,32 +193,34 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
     $form->add_elementName('mailingteams_groups_publish', 'mailingteams', ts('Groups that this Team can Approve and Schedule Mailings for; the Team will also be able to Draft Mailings for these Groups.'));
 
     // Get and set the MailingTeam defaults.
-    $team = civicrm_api3('Team','getsingle', array('id' => $form->team_id));
-    $tfea = civicrm_api3('TeamMailingFromAddress', 'get', array('team_id' => $form->team_id, 'options' => array('limit' => 0)));
-    $tgr  = civicrm_api3('TeamMailingGroup', 'get', array('team_id' => $form->team_id, 'options' => array('limit' => 0)));
+    if($form->team_id) {
+      $team = civicrm_api3('Team','getsingle', array('id' => $form->team_id));
+      $tfea = civicrm_api3('TeamMailingFromAddress', 'get', array('team_id' => $form->team_id, 'options' => array('limit' => 0)));
+      $tgr  = civicrm_api3('TeamMailingGroup', 'get', array('team_id' => $form->team_id, 'options' => array('limit' => 0)));
 
-    $defaults['mailingteams_from_addresses'] = array();
-    $defaults['mailingteams_groups_draft']   = array();
-    $defaults['mailingteams_groups_publish'] = array();
+      $defaults['mailingteams_from_addresses'] = array();
+      $defaults['mailingteams_groups_draft']   = array();
+      $defaults['mailingteams_groups_publish'] = array();
 
-    foreach($tfea['values'] as $e) {
-      $defaults['mailingteams_from_addresses'][] = $e['from_email_address_id'];
-    }
-    foreach($tgr['values'] as $g) {
-      if($g['role'] == 'draft') {
-        $defaults['mailingteams_groups_draft'][] = $g['group_id'];
+      foreach($tfea['values'] as $e) {
+        $defaults['mailingteams_from_addresses'][] = $e['from_email_address_id'];
       }
-      elseif($g['role'] == 'publish') {
-        $defaults['mailingteams_groups_publish'][] = $g['group_id'];
+      foreach($tgr['values'] as $g) {
+        if($g['role'] == 'draft') {
+          $defaults['mailingteams_groups_draft'][] = $g['group_id'];
+        }
+        elseif($g['role'] == 'publish') {
+          $defaults['mailingteams_groups_publish'][] = $g['group_id'];
+        }
       }
+
+      $defaults['mailingteams_restricted']     = !empty($team['data']['mailingteams']['restricted']);
+      $defaults['mailingteams_from_addresses'] = implode(',', $defaults['mailingteams_from_addresses']);
+      $defaults['mailingteams_groups_draft']   = implode(',', $defaults['mailingteams_groups_draft']);
+      $defaults['mailingteams_groups_publish'] = implode(',', $defaults['mailingteams_groups_publish']);
+
+      $form->setDefaults($defaults);
     }
-
-    $defaults['mailingteams_restricted']     = !empty($team['data']['mailingteams']['restricted']);
-    $defaults['mailingteams_from_addresses'] = implode(',', $defaults['mailingteams_from_addresses']);
-    $defaults['mailingteams_groups_draft']   = implode(',', $defaults['mailingteams_groups_draft']);
-    $defaults['mailingteams_groups_publish'] = implode(',', $defaults['mailingteams_groups_publish']);
-
-    $form->setDefaults($defaults);
   }
   elseif ($formName == 'CRM_Team_Form_Teams') {
     /* Add columns to Team Listing. */
