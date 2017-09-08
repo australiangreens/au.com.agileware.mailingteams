@@ -429,6 +429,12 @@ function _mailingteams_update_groups($team_id, $draft_groups, $publish_groups) {
   }
 }
 
+function mailingteams_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  if(($apiRequest['entity'] == 'Group' || $apiRequest['entity'] == 'Mailing') && isset($apiRequest['params']['params']['forMailing'])) {
+    $wrappers[] = new CRM_MailingTeam_APIWrapper();
+  }
+}
+
 /**
  * Functions below this ship commented out. Uncomment as required.
  *
