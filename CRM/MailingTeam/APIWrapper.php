@@ -12,8 +12,12 @@ class CRM_MailingTeam_APIWrapper implements API_Wrapper {
           'label_field' => 'group_id.title',
           'search_field' => 'group_id.title',
           'description_field' => 'group_id.description',
-          'group_by' => 'group_id'  // NEED TO ADD SUPPORT FOR THIS TO THE API OBJECT
         ]
+      );
+      $apiRequest['params']['params']['options'] = (
+        !empty($apiRequest['params']['params']['options'])
+        ? array_merge($apiRequest['params']['params']['options'], [ 'group_by' => 'group_id' ])
+        : [ 'group_by' => 'group_id' ]
       );
     }
     CRM_Core_Error::debug_var('apiRequest', $apiRequest);

@@ -42,5 +42,20 @@ function civicrm_api3_team_mailing_group_delete($params) {
  * @throws API_Exception
  */
 function civicrm_api3_team_mailing_group_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $bao = _civicrm_api3_get_BAO(__FUNCTION__);
+  $sql = new CRM_Utils_SQL_Select();
+
+  if(isset($params['options']['group_by'])) {
+    $group_by = $params['options']['group_by'];
+    if(!is_array($group_by)) {
+      $group_by = explode(',', $group_by);
+    }
+    foreach($group_by as $g){
+      if (in_array($g, array_keys($bao::fields()))) {
+        $sql->groupBy($g);
+      }
+    }
+  }
+
+  return _civicrm_api3_basic_get($bao, $params, TRUE, '', $sql);
 }
