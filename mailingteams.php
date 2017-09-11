@@ -430,14 +430,19 @@ function _mailingteams_update_groups($team_id, $draft_groups, $publish_groups) {
 }
 
 function mailingteams_civicrm_apiWrappers(&$wrappers, $apiRequest) {
-  if(($apiRequest['entity'] == 'Group' || $apiRequest['entity'] == 'Mailing') && isset($apiRequest['params']['params']['forMailing'])) {
+  if(($apiRequest['entity'] == 'Group' && isset($apiRequest['params']['params']['forMailing']))  || $apiRequest['entity'] == 'Mailing' || $apiRequest['entity'] == 'OptionValue') {
     $wrappers[] = new CRM_MailingTeam_APIWrapper();
   }
 }
 
 function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
-  if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck) {
+  static $contact_id = NULL;
+
+  if($contact_id === NULL){
     $contact_id = CRM_Core_Session::getLoggedInContactID();
+  }
+
+  if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck) {
     if($entity == 'Group') {
       $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
     }
@@ -446,6 +451,37 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
       //       the groups and from address are not allowable
       $clauses['id'][] = 'IN (SELECT tm.mailing_id FROM civicrm_team_mailing tm LEFT JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ' UNION SELECT id FROM civicrm_mailing m WHERE NOT EXISTS (SELECT 1 FROM civicrm_team_mailing tm WHERE tm.mailing_id = m.id))';
     }
+  }
+}
+
+function _mailingteams_fea_id($option_value_id) {
+  static $fea_id = NULL;
+
+  if(empty($fea_id)) {
+    $bao = new CRM_Core_BAO_OptionGroup;
+    $bao->name = 'from_email_address';
+    $bao->find(1);
+
+    $fea_id = $bao->id;
+  }
+
+  return ($option_value_id == 'from_email_address') || ($option_value_id == $fea_id);
+}
+
+function mailingteams_civicrm_team_permissions($entity_table, $entity_id, $action, $contact_id, &$permissions) {
+  if($entity_table == 'from_email_address') {
+    $addresses = civicrm_api3(
+      'TeamMailingFromAddress', 'get',
+      ['from_email_address_id' => $entity_id, 'options' => ['limit' => 0]]
+    );
+    $count = civicrm_api3(
+      'TeamContact', 'getcount',
+      [ 'contact_id' => $contact_id,
+        'team_id' => [ 'IN' => array_map(function($v){ return $v['team_id']; }, $addresses['values'])]
+      ]
+    );
+
+    $permissions[] = !!$count;
   }
 }
 
