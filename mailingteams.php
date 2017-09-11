@@ -435,6 +435,20 @@ function mailingteams_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   }
 }
 
+function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
+  if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck) {
+    $contact_id = CRM_Core_Session::getLoggedInContactID();
+    if($entity == 'Group') {
+      $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
+    }
+    elseif($entity == 'Mailing') {
+      // @TODO expand to restrict visibility of mailings with no saved team where
+      //       the groups and from address are not allowable
+      $clauses['id'][] = 'IN (SELECT tm.mailing_id FROM civicrm_team_mailing tm LEFT JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ' UNION SELECT id FROM civicrm_mailing m WHERE NOT EXISTS (SELECT 1 FROM civicrm_team_mailing tm WHERE tm.mailing_id = m.id))';
+    }
+  }
+}
+
 /**
  * Functions below this ship commented out. Uncomment as required.
  *

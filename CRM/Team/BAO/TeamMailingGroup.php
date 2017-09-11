@@ -1,6 +1,7 @@
 <?php
 
 class CRM_Team_BAO_TeamMailingGroup extends CRM_Team_DAO_TeamMailingGroup {
+  public static $doAclCheck = FALSE;
 
   /**
    * Create a new TeamMailingGroup based on array-data
@@ -21,4 +22,12 @@ class CRM_Team_BAO_TeamMailingGroup extends CRM_Team_DAO_TeamMailingGroup {
 
     return $instance;
   } */
+
+  public function addSelectWhereClause() {
+    $clauses = parent::addSelectWhereClause();
+    $contact_id = CRM_Core_Session::getLoggedInContactID();
+    $clauses['team_id'][] = 'IN (SELECT team_id FROM civicrm_team_contact WHERE contact_id = ' . $contact_id . ')';
+
+    return $clauses;
+  }
 }
