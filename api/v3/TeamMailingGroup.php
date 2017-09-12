@@ -43,7 +43,7 @@ function civicrm_api3_team_mailing_group_delete($params) {
  */
 function civicrm_api3_team_mailing_group_get($params) {
   $bao = _civicrm_api3_get_BAO(__FUNCTION__);
-  $sql = new CRM_Utils_SQL_Select();
+  $sql = new CRM_Utils_SQL_Select(NULL);
 
   if(isset($params['options']['group_by'])) {
     $group_by = $params['options']['group_by'];
