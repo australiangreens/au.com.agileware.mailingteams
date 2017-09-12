@@ -452,10 +452,10 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
     // @TODO expand to restrict by team that saved the mailing when ready (no interface yet )
     $sqlstr = <<<'EOS'
 IN (SELECT m.id FROM civicrm_mailing m
-          INNER JOIN civicrm_mailing_group mg ON m.id = mg.mailing_id AND mg.entity_table = 'civicrm_group'
-          INNER JOIN civicrm_team_mailing_group tmg ON tmg.group_id = mg.entity_id
-          INNER JOIN civicrm_team_contact tc ON tmg.team_id = tc.team_id
-               WHERE tc.contact_id = %1$d
+           LEFT JOIN civicrm_mailing_group mg ON m.id = mg.mailing_id AND mg.entity_table = 'civicrm_group'
+           LEFT JOIN civicrm_team_mailing_group tmg ON tmg.group_id = mg.entity_id
+           LEFT JOIN civicrm_team_contact tc ON tmg.team_id = tc.team_id
+               WHERE mg.id is NULL OR tc.contact_id = %1$d
 )
 EOS;
     $clauses['id'][] = sprintf($sqlstr, $contact_id);
