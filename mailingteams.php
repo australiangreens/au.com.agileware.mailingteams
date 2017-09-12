@@ -9,6 +9,12 @@ require_once 'mailingteams.civix.php';
  */
 function mailingteams_civicrm_config(&$config) {
   _mailingteams_civix_civicrm_config($config);
+
+  $arg = explode('/', $_GET[$config->userFrameworkURLVar]);
+
+  if (!(CRM_Core_Config::singleton()->userPermissionTemp)) {
+    CRM_Core_Config::singleton()->userPermissionTemp = new CRM_MailingTeam_Permission($arg);
+  }
 }
 
 /**
@@ -490,6 +496,9 @@ function mailingteams_civicrm_team_permissions($entity_table, $entity_id, $actio
     );
 
     $permissions[] = !!$count;
+  }
+  if ($entity_table == 'civicrm_mailing') {
+    $permissions[] = CRM_MailingTeam_Permission::canMail($entity_id, $action, $contact_id);
   }
 }
 
