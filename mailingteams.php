@@ -442,15 +442,21 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
     $contact_id = CRM_Core_Session::getLoggedInContactID();
   }
 
-  if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck) {
-    if($entity == 'Group') {
-      $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
-    }
-    elseif($entity == 'Mailing') {
-      // @TODO expand to restrict visibility of mailings with no saved team where
-      //       the groups and from address are not allowable
-      $clauses['id'][] = 'IN (SELECT tm.mailing_id FROM civicrm_team_mailing tm LEFT JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ' UNION SELECT id FROM civicrm_mailing m WHERE NOT EXISTS (SELECT 1 FROM civicrm_team_mailing tm WHERE tm.mailing_id = m.id))';
-    }
+  if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck && $entity == 'Group') {
+     $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
+  }
+
+  if($entity == 'Mailing') {
+    // @TODO expand to restrict by team that saved the mailing when ready (no interface yet )
+    $sqlstr = <<<'EOS'
+IN (SELECT m.id FROM civicrm_mailing m
+          INNER JOIN civicrm_mailing_group mg ON m.id = mg.mailing_id AND mg.entity_table = 'civicrm_group'
+          INNER JOIN civicrm_team_mailing_group tmg ON tmg.group_id = mg.entity_id
+          INNER JOIN civicrm_team_contact tc ON tmg.team_id = tc.team_id
+               WHERE tc.contact_id = %1$d
+)
+EOS;
+    $clauses['id'][] = sprintf($sqlstr, $contact_id);
   }
 }
 
