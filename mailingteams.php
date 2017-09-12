@@ -448,7 +448,7 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
      $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
   }
 
-  if($entity == 'Mailing') {
+  if($entity == 'Mailing' && !CRM_Core_Permission::check('administer teams')) {
     // @TODO expand to restrict by team that saved the mailing when ready (no interface yet )
     $sqlstr = <<<'EOS'
 IN (SELECT m.id FROM civicrm_mailing m
