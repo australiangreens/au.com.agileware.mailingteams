@@ -180,6 +180,7 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
       array (
         'entity' => 'group',
         'api' => array('params' => array( 'group_type' => array('LIKE' => $mailing_type))),
+        'select' => array ('minimumInputLength' => 0),
         'multiple' => TRUE,
       ));
     $form->add_elementName('mailingteams_groups_draft', 'mailingteams', ts('Groups that this Team can Draft Mailings for.'));
@@ -188,6 +189,7 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
       array (
         'entity' => 'group',
         'api' => array('params' => array( 'group_type' => array('LIKE' => $mailing_type))),
+        'select' => array ('minimumInputLength' => 0),
         'multiple' => TRUE,
       ));
     $form->add_elementName('mailingteams_groups_publish', 'mailingteams', ts('Groups that this Team can Approve and Schedule Mailings for; the Team will also be able to Draft Mailings for these Groups.'));
