@@ -10,7 +10,10 @@ require_once 'mailingteams.civix.php';
 function mailingteams_civicrm_config(&$config) {
   _mailingteams_civix_civicrm_config($config);
 
-  $arg = explode('/', $_GET[$config->userFrameworkURLVar]);
+  $arg = array();
+  if(isset($_GET[$config->userFrameworkURLVar])) {
+    $arg = explode('/', $_GET[$config->userFrameworkURLVar]);
+  }
 
   if (!(CRM_Core_Config::singleton()->userPermissionTemp)) {
     CRM_Core_Config::singleton()->userPermissionTemp = new CRM_MailingTeam_Permission($arg);
