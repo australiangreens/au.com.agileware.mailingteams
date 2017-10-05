@@ -10,6 +10,8 @@
  */
 function _civicrm_api3_team_mailing_group_create_spec(&$spec) {
   // $spec['some_parameter']['api.required'] = 1;
+  $spec['team_id']['api.required'] = 1;
+  $spec['group_id']['api.required'] = 1;
 }
 
 /**

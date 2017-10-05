@@ -6,10 +6,10 @@ use Civi\Test\HookInterface;
 use Civi\Test\TransactionalInterface;
 
 /**
- * Test class for TeamMailing BAO and it's methods.
+ * Test class for TeamMailing API and it's methods.
  * @group headless
  */
-class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessInterface {
+class api_v3_TeamMailingTest extends CiviUnitTestCase implements HeadlessInterface {
 
   public function setUpHeadless() {
     // Comment out following code to setup headless database for tests.
@@ -30,9 +30,7 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
    * Test that TeamMailing is not created with empty params.
    */
   public function testCreateWithEmptyParams() {
-    $params = array();
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertNull($teamMailing);
+    $this->callAPIFailure('TeamMailing', 'create', array());
   }
 
   /**
@@ -43,8 +41,7 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
     $params = array(
       "team_id" => $team->id
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertNull($teamMailing);
+    $this->callAPIFailure('TeamMailing', 'create', $params);
   }
 
   /**
@@ -55,8 +52,7 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
     $params = array(
       "mailing_id" => $mailing
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertNull($teamMailing);
+    $this->callAPIFailure('TeamMailing', 'create', $params);
   }
 
   /**
@@ -69,10 +65,11 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
       "mailing_id" => $mailing,
       "team_id"    => $team->id,
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertInstanceOf("CRM_Team_DAO_TeamMailing",$teamMailing,'Check for created object.');
-    $this->assertEquals($mailing,$teamMailing->mailing_id,'Check for mailing_id');
-    $this->assertEquals($team->id,$teamMailing->team_id,'Check for team_id');
+
+    $result = $this->callAPISuccess('TeamMailing', 'create', $params);
+    $this->assertEquals(1,$result["count"],'Check for created object count.');
+    $this->assertEquals($mailing,$result["values"][$result["id"]]["mailing_id"],'Check for mailing_id');
+    $this->assertEquals($team->id,$result["values"][$result["id"]]["team_id"],'Check for team_id');
   }
 
   /**
@@ -85,16 +82,15 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
       "mailing_id" => $mailing,
       "team_id"    => $team->id,
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertInstanceOf("CRM_Team_DAO_TeamMailing",$teamMailing,'Check for created object.');
+    $result = $this->callAPISuccess('TeamMailing', 'create', $params);
+    $this->assertEquals(1,$result["count"],'Check for created object count.');
 
     $searchParam = array(
       "team_id" => $team->id
     );
 
-    $teamMailing = new CRM_Team_BAO_TeamMailing();
-    $teamMailing->copyValues($searchParam);
-    $this->assertEquals(1,$teamMailing->find(TRUE),"Check for TeamMailings found.");
+    $result = $this->callAPISuccess('team', 'get', $searchParam);
+    $this->assertEquals(1, $result["count"], 'Check if TeamMailing is found.');
   }
 
   /**
@@ -107,12 +103,11 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
       "mailing_id" => $mailing,
       "team_id"    => $team->id,
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertInstanceOf("CRM_Team_DAO_TeamMailing",$teamMailing,'Check for created object.');
+    $result = $this->callAPISuccess('TeamMailing', 'create', $params);
+    $this->assertEquals(1,$result["count"],'Check for created object count.');
 
-    $teamMailing = new CRM_Team_BAO_TeamMailing();
-    $teamMailing->copyValues($params);
-    $this->assertEquals(1,$teamMailing->find(TRUE),"Check for TeamMailing found.");
+    $result = $this->callAPISuccess('team', 'get', $params);
+    $this->assertEquals(1, $result["count"], 'Check if TeamMailing is found.');
   }
 
   /**
@@ -125,16 +120,15 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
       "mailing_id" => $mailing,
       "team_id"    => $team->id,
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertInstanceOf("CRM_Team_DAO_TeamMailing",$teamMailing,'Check for created object.');
+    $result = $this->callAPISuccess('TeamMailing', 'create', $params);
+    $this->assertEquals(1,$result["count"],'Check for created object count.');
 
     $searchParam = array(
       "team_id" => $team->id
     );
 
-    $teamMailing = new CRM_Team_BAO_TeamMailing();
-    $teamMailing->copyValues($searchParam);
-    $this->assertEquals(1,$teamMailing->delete(),"Check if TeamMailings deleted.");
+    $result = $this->callAPISuccess('team', 'delete', $searchParam);
+    $this->assertEquals(1, $result["count"], 'Check if TeamMailing is deleted.');
   }
 
   /**
@@ -147,12 +141,11 @@ class CRM_Team_BAO_TeamMailingTest extends CiviUnitTestCase implements HeadlessI
       "mailing_id" => $mailing,
       "team_id"    => $team->id,
     );
-    $teamMailing = CRM_Team_BAO_TeamMailing::create($params);
-    $this->assertInstanceOf("CRM_Team_DAO_TeamMailing",$teamMailing,'Check for created object.');
+    $result = $this->callAPISuccess('TeamMailing', 'create', $params);
+    $this->assertEquals(1,$result["count"],'Check for created object count.');
 
-    $teamMailing = new CRM_Team_BAO_TeamMailing();
-    $teamMailing->copyValues($params);
-    $this->assertEquals(1,$teamMailing->delete(),"Check if TeamMailings deleted.");
+    $result = $this->callAPISuccess('team', 'delete', $params);
+    $this->assertEquals(1, $result["count"], 'Check if TeamMailing is deleted.');
   }
 
   /*
