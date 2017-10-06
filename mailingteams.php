@@ -438,8 +438,16 @@ function _mailingteams_update_groups($team_id, $draft_groups, $publish_groups) {
 }
 
 function mailingteams_civicrm_apiWrappers(&$wrappers, $apiRequest) {
-  if(($apiRequest['entity'] == 'Group' && isset($apiRequest['params']['params']['forMailing']))  || $apiRequest['entity'] == 'Mailing' || $apiRequest['entity'] == 'OptionValue') {
-    $wrappers[] = new CRM_MailingTeam_APIWrapper();
+  // Recursion guard
+  static $in_wrap = FALSE;
+
+  if(!$in_wrap) {
+    $in_wrap = TRUE;
+    if(!CRM_Core_Permission::check('access CiviMail') && !CRM_Core_Permission::check('administer teams') &&
+      (($apiRequest['entity'] == 'Group' && isset($apiRequest['params']['params']['forMailing']))
+        || $apiRequest['entity'] == 'Mailing' || $apiRequest['entity'] == 'OptionValue')) {
+      $wrappers[] = new CRM_MailingTeam_APIWrapper();
+    }
   }
 }
 
