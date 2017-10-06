@@ -491,7 +491,7 @@ function _mailingteams_fea_id($option_value_id) {
 }
 
 function mailingteams_civicrm_team_permissions($entity_table, $entity_id, $action, $contact_id, &$permissions) {
-  if($entity_table == 'from_email_address') {
+  if($entity_table == 'from_email_address' && !CRM_Core_Permission::check('access CiviMail')) {
     $addresses = civicrm_api3(
       'TeamMailingFromAddress', 'get',
       ['from_email_address_id' => $entity_id, 'options' => ['limit' => 0]]
@@ -505,7 +505,7 @@ function mailingteams_civicrm_team_permissions($entity_table, $entity_id, $actio
 
     $permissions[] = !!$count;
   }
-  if ($entity_table == 'civicrm_mailing') {
+  if ($entity_table == 'civicrm_mailing' && !CRM_Core_Permission::check('access CiviMail')) {
     $permissions[] = CRM_MailingTeam_Permission::canMail($entity_id, $action, $contact_id);
   }
 }

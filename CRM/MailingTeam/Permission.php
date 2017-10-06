@@ -49,6 +49,10 @@ class CRM_MailingTeam_Permission extends CRM_Core_Permission_Temp {
   }
 
   public static function canMail($mid, $action = 'draft', $contact_id = 0) {
+    if(CRM_Core_Permission::check('access CiviMail')) {
+      return TRUE;
+    }
+
     $approve = FALSE;
     try {
       if(!$contact_id) {
