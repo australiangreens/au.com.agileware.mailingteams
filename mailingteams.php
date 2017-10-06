@@ -458,6 +458,10 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
     $contact_id = CRM_Core_Session::getLoggedInContactID();
   }
 
+  if(CRM_Core_Permission::check('access CiviMail')) {
+    return;
+  }
+
   if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck && $entity == 'Group') {
      $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
   }
