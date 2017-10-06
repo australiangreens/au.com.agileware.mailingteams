@@ -22,7 +22,7 @@ class CRM_MailingTeam_Permission extends CRM_Core_Permission_Temp {
     }
 
     // Pretend we can approve anything on the browse URL
-    if ($this->arg[2] == 'browse') {
+    if (isset($this->arg[2]) && ($this->arg[2] == 'browse')) {
       return TRUE;
     }
 
