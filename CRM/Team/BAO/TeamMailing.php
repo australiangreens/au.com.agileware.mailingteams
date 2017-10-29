@@ -8,7 +8,13 @@ class CRM_Team_BAO_TeamMailing extends CRM_Team_DAO_TeamMailing {
    * @param array $params key-value pairs
    * @return CRM_Team_DAO_TeamMailing|NULL
    *
+   */
   public static function create($params) {
+
+    if(!isset($params["team_id"]) || empty($params["team_id"]) || !isset($params["mailing_id"]) || empty($params["mailing_id"])) {
+      return NULL;
+    }
+
     $className = 'CRM_Team_DAO_TeamMailing';
     $entityName = 'TeamMailing';
     $hook = empty($params['id']) ? 'create' : 'edit';
@@ -20,5 +26,5 @@ class CRM_Team_BAO_TeamMailing extends CRM_Team_DAO_TeamMailing {
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
-  } */
+  }
 }

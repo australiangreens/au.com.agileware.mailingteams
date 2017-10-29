@@ -8,7 +8,13 @@ class CRM_Team_BAO_TeamMailingFromAddress extends CRM_Team_DAO_TeamMailingFromAd
    * @param array $params key-value pairs
    * @return CRM_Team_DAO_TeamMailingFromAddress|NULL
    *
+   */
   public static function create($params) {
+
+    if(!isset($params["team_id"]) || empty($params["team_id"]) || !isset($params["from_email_address_id"]) || empty($params["from_email_address_id"])) {
+      return NULL;
+    }
+
     $className = 'CRM_Team_DAO_TeamMailingFromAddress';
     $entityName = 'TeamMailingFromAddress';
     $hook = empty($params['id']) ? 'create' : 'edit';
@@ -20,7 +26,7 @@ class CRM_Team_BAO_TeamMailingFromAddress extends CRM_Team_DAO_TeamMailingFromAd
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
-  } */
+  }
 
   public function addSelectWhereClause() {
     $clauses = parent::addSelectWhereClause();

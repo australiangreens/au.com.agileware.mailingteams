@@ -9,7 +9,8 @@
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
  */
 function _civicrm_api3_team_mailing_create_spec(&$spec) {
-  // $spec['some_parameter']['api.required'] = 1;
+  $spec['team_id']['api.required'] = 1;
+  $spec['mailing_id']['api.required'] = 1;
 }
 
 /**
