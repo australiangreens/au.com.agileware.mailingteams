@@ -167,7 +167,7 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
     $form->addEntityRef('mailingteams_from_addresses', ts('From Email Addresses'),
       array (
         'entity' => 'option_value',
-        'api' => array ('params' => array ('option_group_id' => 'from_email_address')),
+        'api' => array ('params' => array ('option_group_id' => 'from_email_address','domain_id' => CRM_Core_Config::domainID())),
         'select' => array ('minimumInputLength' => 0),
         'multiple' => TRUE,
       ));
@@ -262,7 +262,7 @@ function mailingteams_civicrm_buildForm($formName, &$form) {
     $form->addEntityRef('mailingteams_from_address', ts('From Email Address'),
       array (
         'entity' => 'option_value',
-        'api' => array ('params' => array ('option_group_id' => 'from_email_address')),
+        'api' => array ('params' => array ('option_group_id' => 'from_email_address','domain_id' => CRM_Core_Config::domainID())),
         'select' => array ('minimumInputLength' => 0),
       ));
 
