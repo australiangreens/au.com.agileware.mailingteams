@@ -479,9 +479,10 @@ IN (SELECT m.id FROM civicrm_mailing m
            LEFT JOIN civicrm_team_mailing_group tmg ON tmg.group_id = mg.entity_id
            LEFT JOIN civicrm_team_contact tc ON tmg.team_id = tc.team_id
                WHERE mg.id is NULL OR tc.contact_id = %1$d
+                 AND EXISTS (SELECT 1 FROM team t WHERE t.id = tc.team_id AND domain_id = %2$d)
 )
 EOS;
-    $clauses['id'][] = sprintf($sqlstr, $contact_id);
+    $clauses['id'][] = sprintf($sqlstr, $contact_id, CRM_Core_Config::domainID());
   }
 }
 
