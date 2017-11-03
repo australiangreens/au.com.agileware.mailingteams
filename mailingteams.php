@@ -444,13 +444,15 @@ function mailingteams_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   // Recursion guard
   static $in_wrap = FALSE;
 
-  if(!$in_wrap) {
-    $in_wrap = TRUE;
-    if(!CRM_Core_Permission::check('access CiviMail') && !CRM_Core_Permission::check('administer teams') &&
-      (($apiRequest['entity'] == 'Group' && isset($apiRequest['params']['params']['forMailing']))
+  if(!$in_wrap && (($apiRequest['entity'] == 'Group' && isset($apiRequest['params']['params']['forMailing']))
         || $apiRequest['entity'] == 'Mailing' || $apiRequest['entity'] == 'OptionValue')) {
+    $in_wrap = TRUE;
+
+    if(!CRM_Core_Permission::check('access CiviMail') && !CRM_Core_Permission::check('administer teams')) {
       $wrappers[] = new CRM_MailingTeam_APIWrapper();
     }
+
+    $in_wrap = FALSE;
   }
 }
 
