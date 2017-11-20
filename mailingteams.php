@@ -468,7 +468,7 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
   }
 
   if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck && $entity == 'Group') {
-     $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
+    $clauses['id'][] = sprintf('IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = %1$d AND EXISTS (SELECT 1 FROM civicrm_team t WHERE t.id = tc.team_id AND (domain_id = %2$d OR domain_id IS NULL)))', $contact_id, CRM_Core_Config::domainID());
   }
 
   if($entity == 'Mailing' && !CRM_Core_Permission::check('administer teams')) {
@@ -479,7 +479,7 @@ IN (SELECT m.id FROM civicrm_mailing m
            LEFT JOIN civicrm_team_mailing_group tmg ON tmg.group_id = mg.entity_id
            LEFT JOIN civicrm_team_contact tc ON tmg.team_id = tc.team_id
                WHERE mg.id is NULL OR tc.contact_id = %1$d
-                 AND EXISTS (SELECT 1 FROM team t WHERE t.id = tc.team_id AND domain_id = %2$d)
+  AND EXISTS (SELECT 1 FROM civicrm_team t WHERE t.id = tc.team_id AND (domain_id = %2$d OR domain_id IS NULL))
 )
 EOS;
     $clauses['id'][] = sprintf($sqlstr, $contact_id, CRM_Core_Config::domainID());
