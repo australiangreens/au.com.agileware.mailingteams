@@ -1,7 +1,7 @@
 <?php
 
 class CRM_Team_BAO_TeamMailingGroup extends CRM_Team_DAO_TeamMailingGroup {
-  public static $doAclCheck = FALSE;
+  public static $doAclCheck = 0;
 
   /**
    * Create a new TeamMailingGroup based on array-data

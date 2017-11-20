@@ -167,7 +167,7 @@ function mailingteams_civicrm_preProcess($formName, &$form) {
     $form->addEntityRef('mailingteams_from_addresses', ts('From Email Addresses'),
       array (
         'entity' => 'option_value',
-        'api' => array ('params' => array ('option_group_id' => 'from_email_address')),
+        'api' => array ('params' => array ('option_group_id' => 'from_email_address','domain_id' => CRM_Core_Config::domainID())),
         'select' => array ('minimumInputLength' => 0),
         'multiple' => TRUE,
       ));
@@ -262,7 +262,7 @@ function mailingteams_civicrm_buildForm($formName, &$form) {
     $form->addEntityRef('mailingteams_from_address', ts('From Email Address'),
       array (
         'entity' => 'option_value',
-        'api' => array ('params' => array ('option_group_id' => 'from_email_address')),
+        'api' => array ('params' => array ('option_group_id' => 'from_email_address','domain_id' => CRM_Core_Config::domainID())),
         'select' => array ('minimumInputLength' => 0),
       ));
 
@@ -444,8 +444,8 @@ function mailingteams_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   // Recursion guard
   static $in_wrap = FALSE;
 
-  if(!$in_wrap && (($apiRequest['entity'] == 'Group' && isset($apiRequest['params']['params']['forMailing']))
-        || $apiRequest['entity'] == 'Mailing' || $apiRequest['entity'] == 'OptionValue')) {
+  if(!$in_wrap && ((isset($apiRequest['params']['params']['forMailing']) && ($apiRequest['entity'] == 'Group'
+        || $apiRequest['entity'] == 'Mailing')) || $apiRequest['entity'] == 'OptionValue')) {
     $in_wrap = TRUE;
 
     if(!CRM_Core_Permission::check('access CiviMail') && !CRM_Core_Permission::check('administer teams')) {
@@ -468,7 +468,7 @@ function mailingteams_civicrm_selectWhereClause($entity, &$clauses) {
   }
 
   if(CRM_Team_BAO_TeamMailingGroup::$doAclCheck && $entity == 'Group') {
-     $clauses['id'][] = 'IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = ' . $contact_id . ')';
+    $clauses['id'][] = sprintf('IN (SELECT tmg.group_id FROM civicrm_team_mailing_group tmg INNER JOIN civicrm_team_contact tc USING(team_id) WHERE tc.contact_id = %1$d AND EXISTS (SELECT 1 FROM civicrm_team t WHERE t.id = tc.team_id AND (domain_id = %2$d OR domain_id IS NULL)))', $contact_id, CRM_Core_Config::domainID());
   }
 
   if($entity == 'Mailing' && !CRM_Core_Permission::check('administer teams')) {
@@ -479,9 +479,10 @@ IN (SELECT m.id FROM civicrm_mailing m
            LEFT JOIN civicrm_team_mailing_group tmg ON tmg.group_id = mg.entity_id
            LEFT JOIN civicrm_team_contact tc ON tmg.team_id = tc.team_id
                WHERE mg.id is NULL OR tc.contact_id = %1$d
+  AND EXISTS (SELECT 1 FROM civicrm_team t WHERE t.id = tc.team_id AND (domain_id = %2$d OR domain_id IS NULL))
 )
 EOS;
-    $clauses['id'][] = sprintf($sqlstr, $contact_id);
+    $clauses['id'][] = sprintf($sqlstr, $contact_id, CRM_Core_Config::domainID());
   }
 }
 
